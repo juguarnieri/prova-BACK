@@ -20,7 +20,7 @@ const addTableHeader = (doc, headers, positions, widths) => {
 };
 
 const addTableRow = (doc, data, positions, widths) => {
-    const rowHeight = 30;
+    const rowHeight = 25;
     const initialY = doc.y;
 
     doc.font("Helvetica").fontSize(10);
@@ -41,7 +41,7 @@ const initializePDF = (res, title, filename) => {
     res.setHeader("Content-Disposition", `attachment; filename=${filename}`);
     const doc = new PDFDocument({ margin: 50 });
     doc.pipe(res);
-    doc.fontSize(16).font("Helvetica-Bold").text(title, { align: "center" });
+    doc.fontSize(18).font("Helvetica-Bold").text(title, { align: "center" });
     doc.moveDown(1);
     return doc;
 };
@@ -49,26 +49,25 @@ const initializePDF = (res, title, filename) => {
 const exportParticipantsPDF = async (req, res) => {
     try {
         const participants = await participantModel.getParticipantsWithEvent();
-
-        if (participants.length === 0) {
+        if (!participants || participants.length === 0) {
             return res.status(404).json({ message: "Nenhum participante encontrado." });
         }
 
         const doc = initializePDF(res, "Relatório de Participantes", "participants.pdf");
 
-        const headers = ["ID", "Name", "Empresa", "Email", "Event"];
-        const positions = [50, 80, 200, 310, 450];
+        const headers = ["ID", "Name", "Email", "Enterprise", "Event"];
+        const positions = [50, 80, 200, 350, 450];
         const widths = [30, 90, 130, 90, 100];
 
         addTableHeader(doc, headers, positions, widths);
 
         participants.forEach((participant) => {
             const row = [
-                participant.participant_id,
-                participant.participant_name,
-                participant.enterprise,
+                participant.id,
+                participant.name,
                 participant.email,
-                participant.event_name || "Nenhum evento",
+                participant.enterprise,
+                participant.event_name, // Nome do evento associado
             ];
             addTableRow(doc, row, positions, widths);
         });
@@ -83,27 +82,25 @@ const exportParticipantsPDF = async (req, res) => {
 const exportEventsPDF = async (req, res) => {
     try {
         const events = await eventModel.getEventsWithParticipantsCount();
-
-        if (events.length === 0) {
+        if (!events || events.length === 0) {
             return res.status(404).json({ message: "Nenhum evento encontrado." });
         }
 
         const doc = initializePDF(res, "Relatório de Eventos", "events.pdf");
 
-        const headers = ["ID", "Nome", "Data", "Localização", "Descrição", "Participantes"];
-        const positions = [50, 90, 180, 250, 340, 470];
-        const widths = [30, 90, 80, 90, 110, 80];
+        const headers = ["ID", "Name", "Date", "Location", "Participants"];
+        const positions = [40, 80, 200, 380, 485];
+        const widths = [50, 100, 200, 100, 50];
 
         addTableHeader(doc, headers, positions, widths);
 
         events.forEach((event) => {
             const row = [
                 event.id,
-                event.name_event,
-                new Date(event.date).toLocaleDateString("pt-BR"),
+                event.name,
+                event.date,
                 event.location,
-                event.description,
-                event.participants_count || 0,
+                event.participants_count, 
             ];
             addTableRow(doc, row, positions, widths);
         });
@@ -115,7 +112,7 @@ const exportEventsPDF = async (req, res) => {
     }
 };
 
-module.exports = {
-    exportParticipantsPDF,
-    exportEventsPDF,
+module.exports = { 
+    exportParticipantsPDF, 
+    exportEventsPDF 
 };

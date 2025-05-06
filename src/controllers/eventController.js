@@ -1,23 +1,27 @@
-const { Events } = require("pg");
 const eventModel = require("../models/eventModel");
 
 const getAllEvents = async (req, res) => {
     try {
-        const Events = await eventModel.getAllEvents(); 
+        const events = await eventModel.getEvents(); 
+        if (!events || events.length === 0) {
+            return res.status(404).json({ message: "Nenhum evento encontrado." });
+        }
         res.status(200).json({
             message: "Lista de eventos recuperada com sucesso.",
-            data: Events,
+            data: events,
         });
     } catch (error) {
         console.error("Erro ao buscar eventos:", error.message);
-        res.status(500).json({ message: "Erro ao buscar eventos." });
+        res.status(500).json({
+            message: "Erro ao buscar eventos.",
+            error: error.message, 
+        });
     }
 };
 
-const getEventsById = async (req, res) => {
+const getEventById = async (req, res) => {
     try {
-        const { id } = req.params;
-        const event = await eventModel.getEventsById(id);
+        const event = await eventModel.getEventById(req.params.id);
         if (!event) {
             return res.status(404).json({ message: "Evento não encontrado." });
         }
@@ -26,64 +30,69 @@ const getEventsById = async (req, res) => {
             data: event,
         });
     } catch (error) {
-        console.error("Erro ao buscar evento:", error.message);
+        console.error("Erro ao buscar evento:", error);
         res.status(500).json({ message: "Erro ao buscar evento." });
     }
 };
 
 const createEvent = async (req, res) => {
-    const { name_event, date, location, description, participant_id } = req.body;
-
-    if (!name_event || !date || !location || !description || !participant_id) {
-        return res.status(400).json({ message: "Todos os campos são obrigatórios." });
-    }
-
     try {
-        const newEvent = await eventModel.createEvent({ name_event, date, location, description, participant_id });
-        res.status(201).json({ message: "Evento criado com sucesso.", data: newEvent });
+        const { name, description, date, location } = req.body;
+
+        if (!name || !description || !date || !location) {
+            return res.status(400).json({ message: "Os campos 'name', 'description', 'date' e 'location' são obrigatórios." });
+        }
+
+        const newEvent = await eventModel.createEvent(name, description, date, location);
+        res.status(201).json(newEvent);
     } catch (error) {
-        console.error("Erro ao criar evento:", error.message);
+        console.error("Erro ao criar evento:", error);
         res.status(500).json({ message: "Erro ao criar evento." });
     }
 };
 
 const updateEvent = async (req, res) => {
-    const { id } = req.params;
-    const { name_event, date, location, description, participant_id } = req.body;
-
-    if (!name_event || !date || !location || !description || !participant_id) {
-        return res.status(400).json({ message: "Todos os campos são obrigatórios." });
-    }
-
     try {
-        const updateEvent = await eventModel.updateEvent(id, { name_event, date, location, description, participant_id });
+        const { name, description, date, location } = req.body;
+
+        if (!name || !description || !date || !location) {
+            return res.status(400).json({ message: "Os campos 'name', 'description', 'date' e 'location' são obrigatórios." });
+        }
+
+        const updatedEvent = await eventModel.updateEvent(req.params.id, name, description, date, location);
+        if (!updatedEvent) {
+            return res.status(404).json({ message: "Evento não encontrado." });
+        }
+
         res.status(200).json({
             message: "Evento atualizado com sucesso.",
-            data: updateEvent,
+            data: updatedEvent,
         });
     } catch (error) {
-        console.error("Erro ao atualizar evento:", error.message);
+        console.error("Erro ao atualizar evento:", error);
         res.status(500).json({ message: "Erro ao atualizar evento." });
     }
 };
 
 const deleteEvent = async (req, res) => {
     try {
-        const deleted = await eventModel.deleteEvent(req.params.id);
-        if (!deleted) {
-            return res.status(404).json({ message: "Evento não encontrado para exclusão." });
+        const result = await eventModel.deleteEvent(req.params.id);
+
+        if (!result) {
+            return res.status(404).json({ message: "Evento não encontrado." });
         }
+
         res.status(200).json({ message: "Evento deletado com sucesso." });
     } catch (error) {
-        console.error("Erro ao deletar evento:", error.message);
+        console.error("Erro ao deletar evento:", error);
         res.status(500).json({ message: "Erro ao deletar evento." });
     }
 };
 
 module.exports = {
     getAllEvents,
-    getEventsById,
+    getEventById,
     createEvent,
     updateEvent,
-    deleteEvent
+    deleteEvent,
 };
