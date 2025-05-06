@@ -31,26 +31,6 @@ const getEventsById = async (req, res) => {
     }
 };
 
-const getParticipantsByEvent = async (req, res) => {
-    const { eventId } = req.params;
-
-    try {
-        const Events = await eventModel.getParticipantsByEvent(eventId); 
-
-        if (Events.length === 0) {
-            return res.status(404).json({ message: "Nenhum participante encontrado para este evento." });
-        }
-
-        res.status(200).json({
-            message: "Eventos recuperados com sucesso.",
-            data: Events,
-        });
-    } catch (error) {
-        console.error("Erro ao buscar participantes do evento:", error.message);
-        res.status(500).json({ message: "Erro ao buscar participantes do evento." });
-    }
-};
-
 const createEvent = async (req, res) => {
     const { name_event, date, location, description, participant_id } = req.body;
 
@@ -105,6 +85,5 @@ module.exports = {
     getEventsById,
     createEvent,
     updateEvent,
-    deleteEvent,
-    getParticipantsByEvent
+    deleteEvent
 };

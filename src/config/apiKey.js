@@ -9,7 +9,7 @@ const apiKeyMiddleware = (req, res, next) => {
         return res.status(403).json({ error: 'Chave de API incorreta! Sem autorização.' });
     }
   
-    next(); // Passa para a próxima função
+    next(); 
   };
   
   module.exports = apiKeyMiddleware;

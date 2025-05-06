@@ -92,27 +92,7 @@ const deleteEvent = async (id) => {
     }
 };
 
-const getParticipantsByEvent = async (eventId) => {
-    try {
-        const query = `
-            SELECT 
-                p.id, 
-                p.name, 
-                p.enterprise, 
-                p.email, 
-                p.skills, 
-                p.photo
-            FROM participants p
-            INNER JOIN events e ON p.id = e.participant_id
-            WHERE e.id = $1
-        `;
-        const result = await pool.query(query, [eventId]);
-        return result.rows;
-    } catch (error) {
-        console.error("Erro ao buscar participantes por evento:", error);
-        throw error;
-    }
-};
+
 getEventsWithParticipantsCount = async () => {
     try {
         const query = `
@@ -141,6 +121,5 @@ module.exports = {
     createEvent,
     updateEvent,
     deleteEvent,
-    getParticipantsByEvent,
     getEventsWithParticipantsCount
 };

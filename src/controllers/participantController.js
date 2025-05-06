@@ -35,13 +35,14 @@ const getParticipantById = async (req, res) => {
         res.status(500).json({ message: "Erro ao buscar participante." });
     }
 };
+
 const createParticipant = async (req, res) => {
     try {
         const { name, enterprise, email, skills } = req.body;
-        const photo = req.file ? req.file.filename : null;
+        const photo = req.file ? `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}` : null;
 
-        if (!name || !enterprise || !email || !skills || !photo) {
-            return res.status(400).json({ message: "Todos os campos são obrigatórios." });
+        if (!name || !email) {
+            return res.status(400).json({ message: "Os campos 'name' e 'email' são obrigatórios." });
         }
 
         const newParticipant = await participantModel.createParticipant(name, enterprise, email, skills, photo);
@@ -54,7 +55,6 @@ const createParticipant = async (req, res) => {
         res.status(500).json({ message: "Erro ao criar participante." });
     }
 };
-
 
 const updateParticipant = async (req, res) => {
     try {

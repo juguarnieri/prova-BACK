@@ -20,13 +20,16 @@ const getParticipants = async (date = null) => {
 
 const createParticipant = async (name, enterprise, email, skills, photo) => {
     try {
-        const result = await pool.query(
-            "INSERT INTO participants (name, enterprise, email, skills, photo) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-            [name, enterprise, email, skills, photo]
-        );
+        const query = `
+            INSERT INTO participants (name, enterprise, email, skills, photo)
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING *;
+        `;
+        const values = [name, enterprise, email, skills, photo];
+        const result = await pool.query(query, values);
         return result.rows[0];
     } catch (error) {
-        console.error("Erro no createParticipant:", error);
+        console.error("Erro ao criar participante:", error);
         throw error;
     }
 };
@@ -63,7 +66,6 @@ const updateParticipant = async (id, name, enterprise, email, skills, photo) => 
     }
 };
 
-
 const deleteParticipant = async (id) => {
     try {
         const result = await pool.query("DELETE FROM participants WHERE id = $1 RETURNING *", [id]);
@@ -73,12 +75,20 @@ const deleteParticipant = async (id) => {
         throw error;
     }
 };
-getParticipantsWithEvent = async () => {
+
+const getParticipantsWithEvent = async () => {
     try {
         const query = `
-            SELECT p.*, e.name_event
+            SELECT 
+                p.id AS participant_id,
+                p.name AS participant_name,
+                p.enterprise,
+                p.email,
+                p.skills,
+                p.photo,
+                e.name_event AS event_name
             FROM participants p
-            LEFT JOIN events e ON p.event_id = e.id
+            LEFT JOIN events e ON e.participant_id = p.id
         `;
         const result = await pool.query(query);
         return result.rows;
@@ -86,7 +96,7 @@ getParticipantsWithEvent = async () => {
         console.error("Erro ao buscar participantes com eventos:", error);
         throw error;
     }
-}
+};
 module.exports = {
     createParticipant,
     getParticipantById,

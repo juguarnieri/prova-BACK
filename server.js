@@ -17,8 +17,9 @@ app.use(cors());
 app.use(express.json());
 
 
-app.use("/api", eventRoutes); 
+
 app.use("/api", participantRoutes); 
+app.use("/api", eventRoutes); 
 app.use("/api/reports", reportRoutes);
 
 setupSwagger(app);

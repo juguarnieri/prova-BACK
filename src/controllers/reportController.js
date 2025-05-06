@@ -20,7 +20,7 @@ const addTableHeader = (doc, headers, positions, widths) => {
 };
 
 const addTableRow = (doc, data, positions, widths) => {
-    const rowHeight = 25;
+    const rowHeight = 30;
     const initialY = doc.y;
 
     doc.font("Helvetica").fontSize(10);
@@ -41,7 +41,7 @@ const initializePDF = (res, title, filename) => {
     res.setHeader("Content-Disposition", `attachment; filename=${filename}`);
     const doc = new PDFDocument({ margin: 50 });
     doc.pipe(res);
-    doc.fontSize(18).font("Helvetica-Bold").text(title, { align: "center" });
+    doc.fontSize(16).font("Helvetica-Bold").text(title, { align: "center" });
     doc.moveDown(1);
     return doc;
 };
@@ -56,19 +56,19 @@ const exportParticipantsPDF = async (req, res) => {
 
         const doc = initializePDF(res, "Relatório de Participantes", "participants.pdf");
 
-        const headers = ["ID", "Name", "Enterprise", "Email", "Event"];
-        const positions = [50, 80, 200, 350, 450];
+        const headers = ["ID", "Name", "Empresa", "Email", "Event"];
+        const positions = [50, 80, 200, 310, 450];
         const widths = [30, 90, 130, 90, 100];
 
         addTableHeader(doc, headers, positions, widths);
 
         participants.forEach((participant) => {
             const row = [
-                participant.id,
-                participant.name,
+                participant.participant_id,
+                participant.participant_name,
                 participant.enterprise,
                 participant.email,
-                participant.event_name,
+                participant.event_name || "Nenhum evento",
             ];
             addTableRow(doc, row, positions, widths);
         });
@@ -90,9 +90,9 @@ const exportEventsPDF = async (req, res) => {
 
         const doc = initializePDF(res, "Relatório de Eventos", "events.pdf");
 
-        const headers = ["ID", "Name", "Date", "Location","Descrição", "Participants"];
-        const positions = [50, 80, 200, 350, 450, 500];
-        const widths = [30, 90, 90, 100, 150, 50];
+        const headers = ["ID", "Nome", "Data", "Localização", "Descrição", "Participantes"];
+        const positions = [50, 90, 180, 250, 340, 470];
+        const widths = [30, 90, 80, 90, 110, 80];
 
         addTableHeader(doc, headers, positions, widths);
 
@@ -100,10 +100,10 @@ const exportEventsPDF = async (req, res) => {
             const row = [
                 event.id,
                 event.name_event,
-                new Date(event.date).toLocaleDateString("pt-BR"), 
+                new Date(event.date).toLocaleDateString("pt-BR"),
                 event.location,
                 event.description,
-                event.participants_count,
+                event.participants_count || 0,
             ];
             addTableRow(doc, row, positions, widths);
         });
