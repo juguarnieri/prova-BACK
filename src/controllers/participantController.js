@@ -38,19 +38,23 @@ const getParticipantById = async (req, res) => {
 const createParticipant = async (req, res) => {
     try {
         const { name, enterprise, email, skills } = req.body;
-        const photo = req.file ? req.file.filename : req.body.photo;
+        const photo = req.file ? req.file.filename : null;
 
         if (!name || !enterprise || !email || !skills || !photo) {
-            return res.status(400).json({ message: "Os campos 'name', 'enterprise', 'email', 'skills' e 'photo' são obrigatórios." });
+            return res.status(400).json({ message: "Todos os campos são obrigatórios." });
         }
 
-        const newParticipant = await participantModel.createParticipant(name, enterprise, email, skilss, photo);
-        res.status(201).json(newParticipant);
+        const newParticipant = await participantModel.createParticipant(name, enterprise, email, skills, photo);
+        res.status(201).json({
+            message: "Participante criado com sucesso.",
+            data: newParticipant,
+        });
     } catch (error) {
         console.error("Erro ao criar participante:", error);
         res.status(500).json({ message: "Erro ao criar participante." });
     }
 };
+
 
 const updateParticipant = async (req, res) => {
     try {

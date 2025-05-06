@@ -11,7 +11,7 @@ const getAllEvents = async () => {
     }
 };
 
-const getEventById = async (id) => {
+const getEventsById = async (id) => {
     try {
         const query = `
             SELECT 
@@ -137,7 +137,7 @@ getEventsWithParticipantsCount = async () => {
 
 module.exports = { 
     getAllEvents,
-    getEventById,
+    getEventsById,
     createEvent,
     updateEvent,
     deleteEvent,

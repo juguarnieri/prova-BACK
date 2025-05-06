@@ -6,7 +6,7 @@ const getParticipants = async (date = null) => {
         const params = [];
 
         if (date) {
-            query += " WHERE date = $1";
+            query += " WHERE enterprise = $1";
             params.push(date);
         }
 
@@ -41,20 +41,28 @@ const getParticipantById = async (id) => {
     }
 };
 
-const updateParticipants = async (id, name, enterprise, email, skills, photo) => {
+const updateParticipant = async (id, name, enterprise, email, skills, photo) => {
     try {
-        const result = await pool.query(
-            `UPDATE participants
-             SET name = $1, enterprise = $2, email = $3, skills = $4, photo = $5
-            WHERE id = $6 RETURNING *`,
-            [name, enterprise, email, skills, photo, id]
-        );
-        return result.rowCount > 0 ? result.rows[0] : null;
+        const query = `
+            UPDATE participants
+            SET name = $1, enterprise = $2, email = $3, skills = $4, photo = $5
+            WHERE id = $6
+            RETURNING *
+        `;
+        const values = [name, enterprise, email, skills, photo, id];
+        const result = await pool.query(query, values);
+
+        if (result.rowCount === 0) {
+            return null; 
+        }
+
+        return result.rows[0]; 
     } catch (error) {
-        console.error("Erro no updateParticipants:", error);
+        console.error("Erro ao atualizar participante:", error);
         throw error;
     }
 };
+
 
 const deleteParticipant = async (id) => {
     try {
@@ -82,7 +90,7 @@ getParticipantsWithEvent = async () => {
 module.exports = {
     createParticipant,
     getParticipantById,
-    updateParticipants,
+    updateParticipant,
     getParticipants,
     deleteParticipant,
     getParticipantsWithEvent
