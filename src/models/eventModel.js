@@ -113,6 +113,27 @@ const getParticipantsByEvent = async (eventId) => {
         throw error;
     }
 };
+getEventsWithParticipantsCount = async () => {
+    try {
+        const query = `
+            SELECT 
+                e.id, 
+                e.name_event, 
+                e.date, 
+                e.location, 
+                e.description,
+                COUNT(p.id) AS participants_count
+            FROM events e
+            LEFT JOIN participants p ON e.participant_id = p.id
+            GROUP BY e.id
+        `;
+        const result = await pool.query(query);
+        return result.rows;
+    } catch (error) {
+        console.error("Erro ao buscar eventos com contagem de participantes:", error);
+        throw error;
+    }
+}
 
 module.exports = { 
     getAllEvents,
@@ -121,4 +142,5 @@ module.exports = {
     updateEvent,
     deleteEvent,
     getParticipantsByEvent,
+    getEventsWithParticipantsCount
 };

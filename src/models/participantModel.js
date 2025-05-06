@@ -65,11 +65,25 @@ const deleteParticipant = async (id) => {
         throw error;
     }
 };
-
+getParticipantsWithEvent = async () => {
+    try {
+        const query = `
+            SELECT p.*, e.name_event
+            FROM participants p
+            LEFT JOIN events e ON p.event_id = e.id
+        `;
+        const result = await pool.query(query);
+        return result.rows;
+    } catch (error) {
+        console.error("Erro ao buscar participantes com eventos:", error);
+        throw error;
+    }
+}
 module.exports = {
     createParticipant,
     getParticipantById,
     updateParticipants,
     getParticipants,
-    deleteParticipant
+    deleteParticipant,
+    getParticipantsWithEvent
 };
