@@ -39,14 +39,18 @@ const createEvent = async (req, res) => {
     try {
         const { name, description, date, location } = req.body;
 
-        if (!name || !description || !date || !location) {
-            return res.status(400).json({ message: "Os campos 'name', 'description', 'date' e 'location' são obrigatórios." });
+        // Validações
+        if (!name || !date || !location) {
+            return res.status(400).json({ message: "Os campos 'name', 'date' e 'location' são obrigatórios." });
         }
 
-        const newEvent = await eventModel.createEvent(name, description, date, location);
-        res.status(201).json(newEvent);
+        const newEvent = await eventModel.createEvent({ name, description, date, location });
+        res.status(201).json({
+            message: "Evento criado com sucesso.",
+            data: newEvent,
+        });
     } catch (error) {
-        console.error("Erro ao criar evento:", error);
+        console.error("Erro ao criar evento:", error.message);
         res.status(500).json({ message: "Erro ao criar evento." });
     }
 };

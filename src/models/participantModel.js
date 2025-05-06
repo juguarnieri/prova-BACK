@@ -1,94 +1,102 @@
 const pool = require("../config/database");
 
-const getParticipants = async (date = null) => {
-    try {
-        let query = "SELECT * FROM participants";
-        const params = [];
-
-        if (date) {
-            query += " WHERE enterprise = $1";
-            params.push(date);
-        }
-
-        const result = await pool.query(query, params);
-        return result.rows; 
-    } catch (error) {
-        console.error("Erro ao buscar participantes:", error);
-        throw error;
-    }
-};
-
-const createParticipant = async (name, enterprise, email, skills, photo) => {
-    try {
-        const query = `
-            INSERT INTO participants (name, enterprise, email, skills, photo)
-            VALUES ($1, $2, $3, $4, $5)
-            RETURNING *;
-        `;
-        const values = [name, enterprise, email, skills, photo];
+const getAllParticipants = async (enterprise) => {
+    if (enterprise) {
+        const query = "SELECT * FROM participants WHERE enterprise = $1";
+        const values = [enterprise];
         const result = await pool.query(query, values);
-        return result.rows[0];
-    } catch (error) {
-        console.error("Erro ao criar participante:", error);
-        throw error;
+        return result.rows;
+    } else {
+        const query = "SELECT * FROM participants";
+        const result = await pool.query(query);
+        return result.rows;
     }
 };
 
 const getParticipantById = async (id) => {
-    try {
-        const result = await pool.query("SELECT * FROM participants WHERE id = $1", [id]);
-        return result.rowCount > 0 ? result.rows[0] : null;
-    } catch (error) {
-        console.error("Erro no getParticipantById:", error);
-        throw error;
+    console.log("ID recebido para busca:", id); // Log do ID recebido
+
+    const query = `
+        SELECT participants.*, events.name AS event_name 
+        FROM participants 
+        LEFT JOIN events ON participants.event_id = events.id 
+        WHERE participants.id = $1
+    `;
+    const result = await pool.query(query, [id]);
+
+    console.log("Resultado da consulta:", result.rows); // Log do resultado da consulta
+
+    if (result.rowCount === 0) {
+        throw new Error("Participante não encontrado.");
     }
+
+    return result.rows[0];
 };
 
-const updateParticipant = async (id, name, enterprise, email, skills, photo) => {
-    try {
-        const query = `
-            UPDATE participants
-            SET name = $1, enterprise = $2, email = $3, skills = $4, photo = $5
-            WHERE id = $6
-            RETURNING *
-        `;
-        const values = [name, enterprise, email, skills, photo, id];
-        const result = await pool.query(query, values);
+const createParticipant = async ({ name, email, enterprise, event_id }) => {
+    const query = `
+        INSERT INTO participants (name, email, enterprise, event_id)
+        VALUES ($1, $2, $3, $4)
+        RETURNING *;
+    `;
+    const values = [name, email, enterprise, event_id];
+    const result = await pool.query(query, values);
+    return result.rows[0];
+};
 
-        if (result.rowCount === 0) {
-            return null; 
-        }
-
-        return result.rows[0]; 
-    } catch (error) {
-        console.error("Erro ao atualizar participante:", error);
-        throw error;
+const updateParticipant = async (id, { name, email, enterprise, event_id }) => {
+    if (!name || !email || !enterprise || !event_id) {
+        throw new Error("Todos os campos são obrigatórios.");
     }
+
+    const query = `
+        UPDATE participants
+        SET name = $1, email = $2, enterprise = $3, event_id = $4
+        WHERE id = $5
+        RETURNING *;
+    `;
+    const values = [name, email, enterprise, event_id, id];
+    const result = await pool.query(query, values);
+
+    if (result.rowCount === 0) {
+        throw new Error("Participante não encontrado para atualização.");
+    }
+
+    return result.rows[0];
 };
 
 const deleteParticipant = async (id) => {
-    try {
-        const result = await pool.query("DELETE FROM participants WHERE id = $1 RETURNING *", [id]);
-        return result.rowCount > 0 ? result.rows[0] : null;
-    } catch (error) {
-        console.error("Erro no deleteParticipant:", error);
-        throw error;
+    const result = await pool.query(
+        "DELETE FROM participants WHERE id = $1 RETURNING *",
+        [id]
+    );
+
+    if (result.rowCount === 0) {
+        throw new Error("Participante não encontrado para exclusão.");
     }
+
+    return { message: "Participante deletado com sucesso." };
+};
+
+const getParticipantsByEvent = async (eventId) => {
+    const result = await pool.query(
+        `SELECT * FROM participants WHERE event_id = $1`,
+        [eventId]
+    );
+    return result.rows;
 };
 
 const getParticipantsWithEvent = async () => {
     try {
         const query = `
             SELECT 
-                p.id AS participant_id,
-                p.name AS participant_name,
-                p.enterprise,
-                p.email,
-                p.skills,
-                p.photo,
-                e.name_event AS event_name
+                p.id, 
+                p.name, 
+                p.email, 
+                p.enterprise, 
+                e.name AS event_name
             FROM participants p
-            LEFT JOIN events e ON e.participant_id = p.id
+            LEFT JOIN events e ON p.event_id = e.id
         `;
         const result = await pool.query(query);
         return result.rows;
@@ -97,11 +105,13 @@ const getParticipantsWithEvent = async () => {
         throw error;
     }
 };
-module.exports = {
-    createParticipant,
+
+module.exports = { 
+    getAllParticipants,
     getParticipantById,
+    createParticipant,
     updateParticipant,
-    getParticipants,
+    getParticipantsWithEvent,
     deleteParticipant,
-    getParticipantsWithEvent
+    getParticipantsByEvent
 };

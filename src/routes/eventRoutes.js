@@ -24,34 +24,26 @@ router.use(apiKeyMiddleware);
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Lista de eventos encontrada com sucesso."
- *                 data:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       id:
- *                         type: integer
- *                         example: 1
- *                       name_event:
- *                         type: string
- *                         example: "Tech Congress"
- *                       date:
- *                         type: string
- *                         example: "2025-05-15"
- *                       location:
- *                         type: string
- *                         example: "São Paulo"
- *                       description:
- *                         type: string
- *                         example: "Evento sobre novas tecnologias."
- *                       participant_id:
- *                         type: integer
- *                         example: 1
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                     example: 1
+ *                   name:
+ *                     type: string
+ *                     example: "Tech Congress"
+ *                   description:
+ *                     type: string
+ *                     example: "Annual event on technology innovations."
+ *                   date:
+ *                     type: string
+ *                     format: date
+ *                     example: "2025-06-15"
+ *                   location:
+ *                     type: string
+ *                     example: "SP Convention Center"
  *       500:
  *         description: Erro ao buscar eventos
  *         content:
@@ -87,30 +79,22 @@ router.get("/events", eventController.getAllEvents);
  *             schema:
  *               type: object
  *               properties:
- *                 message:
+ *                 id:
+ *                   type: integer
+ *                   example: 1
+ *                 name:
  *                   type: string
- *                   example: "Evento encontrado com sucesso."
- *                 data:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: integer
- *                       example: 1
- *                     name_event:
- *                       type: string
- *                       example: "Tech Congress"
- *                     date:
- *                       type: string
- *                       example: "2025-05-15"
- *                     location:
- *                       type: string
- *                       example: "São Paulo"
- *                     description:
- *                       type: string
- *                       example: "Evento sobre novas tecnologias."
- *                     participant_id:
- *                       type: integer
- *                       example: 1
+ *                   example: "Tech Congress"
+ *                 description:
+ *                   type: string
+ *                   example: "Annual event on technology innovations."
+ *                 date:
+ *                   type: string
+ *                   format: date
+ *                   example: "2025-06-15"
+ *                 location:
+ *                   type: string
+ *                   example: "SP Convention Center"
  *       404:
  *         description: Evento não encontrado
  *         content:
@@ -132,7 +116,7 @@ router.get("/events", eventController.getAllEvents);
  *                   type: string
  *                   example: "Erro ao buscar evento."
  */
-router.get("/events/:id", eventController.getEventsById);
+router.get("/events/:id", eventController.getEventById);
 
 /**
  * @swagger
@@ -147,81 +131,33 @@ router.get("/events/:id", eventController.getEventsById);
  *           schema:
  *             type: object
  *             required:
- *               - name_event
+ *               - name
  *               - date
  *               - location
- *               - description
- *               - participant_id
  *             properties:
- *               name_event:
+ *               name:
  *                 type: string
- *                 example: "Tech Congress"
- *               date:
- *                 type: string
- *                 example: "2025-05-15"
- *               location:
- *                 type: string
- *                 example: "São Paulo"
+ *                 example: "JUJU"
  *               description:
  *                 type: string
- *                 example: "Evento sobre novas tecnologias."
- *               participant_id:
- *                 type: integer
- *                 example: 1
+ *                 example: "Annual event on technology innovations. GGERG"
+ *               date:
+ *                 type: string
+ *                 format: date
+ *                 example: "2025-06-15"
+ *               location:
+ *                 type: string
+ *                 example: "SP Convention Center"
  *     responses:
  *       201:
  *         description: Evento criado com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Evento criado com sucesso."
- *                 data:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: integer
- *                       example: 10
- *                     name_event:
- *                       type: string
- *                       example: "Tech Congress"
- *                     date:
- *                       type: string
- *                       example: "2025-05-15"
- *                     location:
- *                       type: string
- *                       example: "São Paulo"
- *                     description:
- *                       type: string
- *                       example: "Evento sobre novas tecnologias."
- *                     participant_id:
- *                       type: integer
- *                       example: 1
  *       400:
  *         description: Campos obrigatórios ausentes
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Todos os campos são obrigatórios."
  *       500:
  *         description: Erro ao criar evento
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Erro ao criar evento."
  */
 router.post("/events", eventController.createEvent);
+
 
 /**
  * @swagger
@@ -235,7 +171,7 @@ router.post("/events", eventController.createEvent);
  *         required: true
  *         schema:
  *           type: integer
- *           example: 5
+ *           example: 1
  *         description: ID do evento
  *     requestBody:
  *       required: true
@@ -243,28 +179,20 @@ router.post("/events", eventController.createEvent);
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - name_event
- *               - date
- *               - location
- *               - description
- *               - participant_id
  *             properties:
- *               name_event:
+ *               name:
  *                 type: string
- *                 example: "Tech Congress"
- *               date:
- *                 type: string
- *                 example: "2025-05-15"
- *               location:
- *                 type: string
- *                 example: "São Paulo"
+ *                 example: "Tech Congress Updated"
  *               description:
  *                 type: string
- *                 example: "Evento sobre novas tecnologias."
- *               participant_id:
- *                 type: integer
- *                 example: 1
+ *                 example: "Updated description."
+ *               date:
+ *                 type: string
+ *                 format: date
+ *                 example: "2025-06-20"
+ *               location:
+ *                 type: string
+ *                 example: "Updated Location"
  *     responses:
  *       200:
  *         description: Evento atualizado com sucesso
@@ -273,32 +201,24 @@ router.post("/events", eventController.createEvent);
  *             schema:
  *               type: object
  *               properties:
- *                 message:
+ *                 id:
+ *                   type: integer
+ *                   example: 1
+ *                 name:
  *                   type: string
- *                   example: "Evento atualizado com sucesso."
- *                 data:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: integer
- *                       example: 5
- *                     name_event:
- *                       type: string
- *                       example: "Tech Congress"
- *                     date:
- *                       type: string
- *                       example: "2025-05-15"
- *                     location:
- *                       type: string
- *                       example: "São Paulo"
- *                     description:
- *                       type: string
- *                       example: "Evento sobre novas tecnologias."
- *                     participant_id:
- *                       type: integer
- *                       example: 1
- *       400:
- *         description: Campos obrigatórios ausentes
+ *                   example: "Tech Congress Updated"
+ *                 description:
+ *                   type: string
+ *                   example: "Updated description."
+ *                 date:
+ *                   type: string
+ *                   format: date
+ *                   example: "2025-06-20"
+ *                 location:
+ *                   type: string
+ *                   example: "Updated Location"
+ *       404:
+ *         description: Evento não encontrado para atualização
  *         content:
  *           application/json:
  *             schema:
@@ -306,7 +226,7 @@ router.post("/events", eventController.createEvent);
  *               properties:
  *                 message:
  *                   type: string
- *                   example: "Todos os campos são obrigatórios."
+ *                   example: "Evento não encontrado para atualização."
  *       500:
  *         description: Erro ao atualizar evento
  *         content:
@@ -332,7 +252,7 @@ router.put("/events/:id", eventController.updateEvent);
  *         required: true
  *         schema:
  *           type: integer
- *           example: 3
+ *           example: 1
  *         description: ID do evento
  *     responses:
  *       200:

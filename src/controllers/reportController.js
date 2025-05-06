@@ -67,7 +67,7 @@ const exportParticipantsPDF = async (req, res) => {
                 participant.name,
                 participant.email,
                 participant.enterprise,
-                participant.event_name, // Nome do evento associado
+                participant.event_name, 
             ];
             addTableRow(doc, row, positions, widths);
         });
@@ -88,7 +88,7 @@ const exportEventsPDF = async (req, res) => {
 
         const doc = initializePDF(res, "Relatório de Eventos", "events.pdf");
 
-        const headers = ["ID", "Name", "Date", "Location", "Participants"];
+        const headers = ["ID", "Name", "Date", "Location", "Pessoas"];
         const positions = [40, 80, 200, 380, 485];
         const widths = [50, 100, 200, 100, 50];
 

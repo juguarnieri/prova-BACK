@@ -24,36 +24,43 @@ router.use(apiKeyMiddleware);
  *         name: enterprise
  *         schema:
  *           type: string
- *           example: "Empresa A"
- *         description: Nome da empresa para filtrar os participantes (opcional)
+ *           example: TechCorp
+ *         required: false
+ *         description: Empresa do participante para filtrar (opcional)
  *     responses:
  *       200:
  *         description: Lista de participantes recuperada com sucesso
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: integer
- *                     example: 1
- *                   name:
- *                     type: string
- *                     example: "João Silva"
- *                   enterprise:
- *                     type: string
- *                     example: "Empresa A"
- *                   email:
- *                     type: string
- *                     example: "joao.silva@empresa.com"
- *                   skills:
- *                     type: string
- *                     example: "Python, SQL"
- *                   photo:
- *                     type: string
- *                     example: "joao.jpg"
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Lista de participantes encontrada com sucesso."
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                         example: 1
+ *                       name:
+ *                         type: string
+ *                         example: "Alice Martins"
+ *                       email:
+ *                         type: string
+ *                         example: "alice.martins@email.com"
+ *                       enterprise:
+ *                         type: string
+ *                         example: "TechCorp"
+ *                       photo:
+ *                         type: string
+ *                         example: "alice_photo.jpg"
+ *                       event_name:
+ *                         type: string
+ *                         example: "Tech Congress"
  *       500:
  *         description: Erro ao buscar participantes
  *         content:
@@ -89,44 +96,34 @@ router.get("/participants", participantController.getAllParticipants);
  *             schema:
  *               type: object
  *               properties:
- *                 id:
- *                   type: integer
- *                   example: 1
- *                 name:
+ *                 message:
  *                   type: string
- *                   example: "João Silva"
- *                 enterprise:
- *                   type: string
- *                   example: "Empresa A"
- *                 email:
- *                   type: string
- *                   example: "joao.silva@empresa.com"
- *                 skills:
- *                   type: string
- *                   example: "Python, SQL"
- *                 photo:
- *                   type: string
- *                   example: "joao.jpg"
+ *                   example: "Participante encontrado com sucesso."
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       example: 1
+ *                     name:
+ *                       type: string
+ *                       example: "Alice Martins"
+ *                     email:
+ *                       type: string
+ *                       example: "alice.martins@email.com"
+ *                     enterprise:
+ *                       type: string
+ *                       example: "TechCorp"
+ *                     photo:
+ *                       type: string
+ *                       example: "alice_photo.jpg"
+ *                     event_name:
+ *                       type: string
+ *                       example: "Tech Congress"
  *       404:
  *         description: Participante não encontrado
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Participante não encontrado."
  *       500:
  *         description: Erro ao buscar participante
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Erro ao buscar participante."
  */
 router.get("/participants/:id", participantController.getParticipantById);
 
@@ -144,75 +141,58 @@ router.get("/participants/:id", participantController.getParticipantById);
  *             type: object
  *             required:
  *               - name
- *               - enterprise
  *               - email
- *               - skills
+ *               - enterprise
+ *               - event_id
  *               - photo
  *             properties:
  *               name:
  *                 type: string
- *                 example: "João Silva"
- *               enterprise:
- *                 type: string
- *                 example: "Empresa A"
+ *                 example: "Bruno Souza"
  *               email:
  *                 type: string
- *                 example: "joao.silva@empresa.com"
- *               skills:
+ *                 example: "bruno.souza@email.com"
+ *               enterprise:
  *                 type: string
- *                 example: "Python, SQL"
+ *                 example: "TechCorp"
+ *               event_id:
+ *                 type: integer
+ *                 example: 1
  *               photo:
  *                 type: string
  *                 format: binary
- *                 description: Arquivo de imagem do participante
  *     responses:
  *       201:
  *         description: Participante criado com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: integer
- *                   example: 1
- *                 name:
- *                   type: string
- *                   example: "João Silva"
- *                 enterprise:
- *                   type: string
- *                   example: "Empresa A"
- *                 email:
- *                   type: string
- *                   example: "joao.silva@empresa.com"
- *                 skills:
- *                   type: string
- *                   example: "Python, SQL"
- *                 photo:
- *                   type: string
- *                   example: "joao.jpg"
  *       400:
  *         description: Campos obrigatórios ausentes
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Os campos obrigatórios estão ausentes."
  *       500:
  *         description: Erro ao criar participante
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Erro ao criar participante."
  */
 router.post("/participants", upload.single("photo"), participantController.createParticipant);
+
+/**
+ * @swagger
+ * /api/participants/event/{eventId}:
+ *   get:
+ *     summary: Busca participantes de um evento específico
+ *     tags: [Participants]
+ *     parameters:
+ *       - in: path
+ *         name: eventId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do evento
+ *     responses:
+ *       200:
+ *         description: Lista de participantes recuperada com sucesso
+ *       404:
+ *         description: Nenhum participante encontrado
+ *       500:
+ *         description: Erro ao buscar participantes
+ */
+router.get("/participants/event/:eventId", participantController.getParticipantsByEvent);
 
 /**
  * @swagger
@@ -226,78 +206,45 @@ router.post("/participants", upload.single("photo"), participantController.creat
  *         required: true
  *         schema:
  *           type: integer
- *           example: 1
+ *           example: 5
  *         description: ID do participante
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *               - enterprise
+ *               - event_id
+ *               - photo
  *             properties:
  *               name:
  *                 type: string
- *                 example: "João Silva"
- *               enterprise:
- *                 type: string
- *                 example: "Empresa A"
+ *                 example: "Carla Dias"
  *               email:
  *                 type: string
- *                 example: "joao.silva@empresa.com"
- *               skills:
+ *                 example: "carla.dias@email.com"
+ *               enterprise:
  *                 type: string
- *                 example: "Python, SQL"
+ *                 example: "TechCorp"
+ *               event_id:
+ *                 type: integer
+ *                 example: 2
  *               photo:
  *                 type: string
- *                 example: "joao.jpg"
+ *                 format: binary
  *     responses:
  *       200:
  *         description: Participante atualizado com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: integer
- *                   example: 1
- *                 name:
- *                   type: string
- *                   example: "João Silva"
- *                 enterprise:
- *                   type: string
- *                   example: "Empresa A"
- *                 email:
- *                   type: string
- *                   example: "joao.silva@empresa.com"
- *                 skills:
- *                   type: string
- *                   example: "Python, SQL"
- *                 photo:
- *                   type: string
- *                   example: "joao.jpg"
- *       404:
- *         description: Participante não encontrado para atualização
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Participante não encontrado para atualização."
+ *       400:
+ *         description: Campos obrigatórios ausentes
  *       500:
  *         description: Erro ao atualizar participante
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Erro ao atualizar participante."
  */
-router.put("/participants/:id", participantController.updateParticipant);
+router.put("/participants/:id", upload.single("photo"), participantController.updateParticipant);
 
 /**
  * @swagger
@@ -311,39 +258,15 @@ router.put("/participants/:id", participantController.updateParticipant);
  *         required: true
  *         schema:
  *           type: integer
- *           example: 1
+ *           example: 3
  *         description: ID do participante
  *     responses:
  *       200:
  *         description: Participante deletado com sucesso
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Participante deletado com sucesso."
  *       404:
  *         description: Participante não encontrado
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Participante não encontrado."
  *       500:
  *         description: Erro ao deletar participante
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Erro ao deletar participante."
  */
 router.delete("/participants/:id", participantController.deleteParticipant);
 

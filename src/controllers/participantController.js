@@ -16,18 +16,18 @@ const getAllParticipants = async (req, res) => {
 
 const getParticipantById = async (req, res) => {
     try {
-        const { id } = req.params;
+        const { id } = req.params; // Obtém o ID da URL
+        console.log("ID recebido no controlador:", id); // Log do ID recebido
+
         const participant = await participantModel.getParticipantById(id);
-        if (!participant) {
-            return res.status(404).json({ message: "Participante não encontrado." });
-        }
+
         res.status(200).json({
             message: "Participante encontrado com sucesso.",
             data: participant,
         });
     } catch (error) {
         console.error("Erro ao buscar participante:", error.message);
-        res.status(500).json({ message: "Erro ao buscar participante." });
+        res.status(404).json({ message: "Participante não encontrado." });
     }
 };
 

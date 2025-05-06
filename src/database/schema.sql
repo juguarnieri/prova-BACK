@@ -3,10 +3,10 @@ CREATE DATABASE testedb;
 
 CREATE TABLE events (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE,
+    name VARCHAR(500) NOT NULL UNIQUE,
     description TEXT,
     date DATE NOT NULL,
-    location VARCHAR(150) NOT NULL
+    location VARCHAR(250) NOT NULL
 );
 
 CREATE TABLE participants (

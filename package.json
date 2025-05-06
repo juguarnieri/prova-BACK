@@ -7,7 +7,12 @@
     "start": "node server.js",
     "dev": "nodemon server.js"
   },
-  "keywords": ["senai", "julia", "back", "prova" ],
+  "keywords": [
+    "senai",
+    "julia",
+    "back",
+    "prova"
+  ],
   "author": "Júlia Guarnieri",
   "license": "MIT",
   "description": "Aqui está armazenado a prova de back-end sobre participantes e eventos",
@@ -15,6 +20,11 @@
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
-    "pg": "^8.15.6"
+    "multer": "^1.4.5-lts.2",
+    "nodemon": "^3.1.10",
+    "pdfkit": "^0.17.1",
+    "pg": "^8.15.6",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   }
 }
