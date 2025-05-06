@@ -62,7 +62,7 @@ router.use(apiKeyMiddleware);
  *                         type: string
  *                         example: "Tech Congress"
  *       500:
- *         description: Erro ao buscar participantes
+ *         description: Erro interno ao buscar participantes
  *         content:
  *           application/json:
  *             schema:
@@ -70,7 +70,7 @@ router.use(apiKeyMiddleware);
  *               properties:
  *                 message:
  *                   type: string
- *                   example: "Erro ao buscar participantes."
+ *                   example: "Ocorreu um erro inesperado ao buscar os participantes. Por favor, tente novamente mais tarde."
  */
 router.get("/participants", participantController.getAllParticipants);
 
@@ -122,8 +122,24 @@ router.get("/participants", participantController.getAllParticipants);
  *                       example: "Tech Congress"
  *       404:
  *         description: Participante não encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Nenhum participante foi encontrado com o ID fornecido."
  *       500:
- *         description: Erro ao buscar participante
+ *         description: Erro interno ao buscar participante
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Ocorreu um erro inesperado ao buscar o participante. Por favor, tente novamente mais tarde."
  */
 router.get("/participants/:id", participantController.getParticipantById);
 
@@ -165,9 +181,25 @@ router.get("/participants/:id", participantController.getParticipantById);
  *       201:
  *         description: Participante criado com sucesso
  *       400:
- *         description: Campos obrigatórios ausentes
+ *         description: Dados inválidos ou campos obrigatórios ausentes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Os campos obrigatórios 'name', 'email', 'enterprise', 'event_id' e 'photo' devem ser preenchidos."
  *       500:
- *         description: Erro ao criar participante
+ *         description: Erro interno ao criar participante
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Ocorreu um erro inesperado ao criar o participante. Por favor, tente novamente mais tarde."
  */
 router.post("/participants", upload.single("photo"), participantController.createParticipant);
 
@@ -183,14 +215,62 @@ router.post("/participants", upload.single("photo"), participantController.creat
  *         required: true
  *         schema:
  *           type: integer
- *         description: ID do evento
+ *           example: 1
+ *         description: ID do evento para buscar os participantes
  *     responses:
  *       200:
  *         description: Lista de participantes recuperada com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Lista de participantes recuperada com sucesso."
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                         example: 1
+ *                       name:
+ *                         type: string
+ *                         example: "Alice Martins"
+ *                       email:
+ *                         type: string
+ *                         example: "alice.martins@email.com"
+ *                       enterprise:
+ *                         type: string
+ *                         example: "TechCorp"
+ *                       photo:
+ *                         type: string
+ *                         example: "alice_photo.jpg"
+ *                       event_name:
+ *                         type: string
+ *                         example: "Tech Congress"
  *       404:
- *         description: Nenhum participante encontrado
+ *         description: Nenhum participante encontrado para o evento especificado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Nenhum participante foi encontrado para o evento com ID fornecido."
  *       500:
- *         description: Erro ao buscar participantes
+ *         description: Erro interno ao buscar participantes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Ocorreu um erro inesperado ao buscar os participantes. Por favor, tente novamente mais tarde."
  */
 router.get("/participants/event/:eventId", participantController.getParticipantsByEvent);
 
@@ -207,7 +287,7 @@ router.get("/participants/event/:eventId", participantController.getParticipants
  *         schema:
  *           type: integer
  *           example: 5
- *         description: ID do participante
+ *         description: ID do participante a ser atualizado
  *     requestBody:
  *       required: true
  *       content:
@@ -239,10 +319,52 @@ router.get("/participants/event/:eventId", participantController.getParticipants
  *     responses:
  *       200:
  *         description: Participante atualizado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Participante atualizado com sucesso."
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       example: 5
+ *                     name:
+ *                       type: string
+ *                       example: "Carla Dias"
+ *                     email:
+ *                       type: string
+ *                       example: "carla.dias@email.com"
+ *                     enterprise:
+ *                       type: string
+ *                       example: "TechCorp"
+ *                     event_id:
+ *                       type: integer
+ *                       example: 2
  *       400:
- *         description: Campos obrigatórios ausentes
+ *         description: Dados inválidos ou campos obrigatórios ausentes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Os campos obrigatórios 'name', 'email', 'enterprise', 'event_id' e 'photo' devem ser preenchidos."
  *       500:
- *         description: Erro ao atualizar participante
+ *         description: Erro interno ao atualizar participante
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Ocorreu um erro inesperado ao atualizar o participante. Por favor, tente novamente mais tarde."
  */
 router.put("/participants/:id", upload.single("photo"), participantController.updateParticipant);
 
@@ -259,14 +381,38 @@ router.put("/participants/:id", upload.single("photo"), participantController.up
  *         schema:
  *           type: integer
  *           example: 3
- *         description: ID do participante
+ *         description: ID do participante a ser deletado
  *     responses:
  *       200:
  *         description: Participante deletado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Participante deletado com sucesso."
  *       404:
  *         description: Participante não encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Nenhum participante foi encontrado com o ID fornecido."
  *       500:
- *         description: Erro ao deletar participante
+ *         description: Erro interno ao deletar participante
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Ocorreu um erro inesperado ao deletar o participante. Por favor, tente novamente mais tarde."
  */
 router.delete("/participants/:id", participantController.deleteParticipant);
 

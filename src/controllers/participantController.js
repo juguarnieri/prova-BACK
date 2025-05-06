@@ -16,8 +16,8 @@ const getAllParticipants = async (req, res) => {
 
 const getParticipantById = async (req, res) => {
     try {
-        const { id } = req.params; // Obtém o ID da URL
-        console.log("ID recebido no controlador:", id); // Log do ID recebido
+        const { id } = req.params; 
+        console.log("ID recebido no controlador:", id); 
 
         const participant = await participantModel.getParticipantById(id);
 
@@ -52,16 +52,26 @@ const getParticipantsByEvent = async (req, res) => {
 };
 
 const createParticipant = async (req, res) => {
-    const { name, email, enterprise, event_id } = req.body;
-    const photo = req.file ? req.file.filename : req.body.photo;
-
-    if (!name || !email || !enterprise || !event_id || !photo) {
-        return res.status(400).json({ message: "Todos os campos são obrigatórios." });
-    }
-
     try {
-        const newParticipant = await participantModel.createParticipant({ name, email, enterprise, photo, event_id });
-        res.status(201).json({ message: "Participante criado com sucesso.", data: newParticipant });
+        const { name, email, enterprise, event_id } = req.body;
+        const photo = req.file ? req.file.filename : null; 
+
+        if (!name || !email || !enterprise || !event_id || !photo) {
+            return res.status(400).json({ message: "Todos os campos obrigatórios devem ser preenchidos." });
+        }
+
+        const newParticipant = await participantModel.createParticipant({
+            name,
+            email,
+            enterprise,
+            event_id,
+            photo,
+        });
+
+        res.status(201).json({
+            message: "Participante criado com sucesso.",
+            data: newParticipant,
+        });
     } catch (error) {
         console.error("Erro ao criar participante:", error.message);
         res.status(500).json({ message: "Erro ao criar participante." });

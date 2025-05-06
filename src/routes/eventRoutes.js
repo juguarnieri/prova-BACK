@@ -45,7 +45,7 @@ router.use(apiKeyMiddleware);
  *                     type: string
  *                     example: "SP Convention Center"
  *       500:
- *         description: Erro ao buscar eventos
+ *         description: Erro interno ao buscar eventos
  *         content:
  *           application/json:
  *             schema:
@@ -53,7 +53,7 @@ router.use(apiKeyMiddleware);
  *               properties:
  *                 message:
  *                   type: string
- *                   example: "Erro ao buscar eventos."
+ *                   example: "Ocorreu um erro inesperado ao buscar os eventos. Por favor, tente novamente mais tarde."
  */
 router.get("/events", eventController.getAllEvents);
 
@@ -104,9 +104,9 @@ router.get("/events", eventController.getAllEvents);
  *               properties:
  *                 message:
  *                   type: string
- *                   example: "Evento não encontrado."
+ *                   example: "Nenhum evento foi encontrado com o ID fornecido."
  *       500:
- *         description: Erro ao buscar evento
+ *         description: Erro interno ao buscar evento
  *         content:
  *           application/json:
  *             schema:
@@ -114,7 +114,7 @@ router.get("/events", eventController.getAllEvents);
  *               properties:
  *                 message:
  *                   type: string
- *                   example: "Erro ao buscar evento."
+ *                   example: "Ocorreu um erro inesperado ao buscar o evento. Por favor, tente novamente mais tarde."
  */
 router.get("/events/:id", eventController.getEventById);
 
@@ -137,10 +137,10 @@ router.get("/events/:id", eventController.getEventById);
  *             properties:
  *               name:
  *                 type: string
- *                 example: "JUJU"
+ *                 example: "Tech Congress"
  *               description:
  *                 type: string
- *                 example: "Annual event on technology innovations. GGERG"
+ *                 example: "Annual event on technology innovations."
  *               date:
  *                 type: string
  *                 format: date
@@ -151,13 +151,55 @@ router.get("/events/:id", eventController.getEventById);
  *     responses:
  *       201:
  *         description: Evento criado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Evento criado com sucesso."
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       example: 1
+ *                     name:
+ *                       type: string
+ *                       example: "Tech Congress"
+ *                     description:
+ *                       type: string
+ *                       example: "Annual event on technology innovations."
+ *                     date:
+ *                       type: string
+ *                       format: date
+ *                       example: "2025-06-15"
+ *                     location:
+ *                       type: string
+ *                       example: "SP Convention Center"
  *       400:
- *         description: Campos obrigatórios ausentes
+ *         description: Campos obrigatórios ausentes ou inválidos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Os campos obrigatórios 'name', 'date' e 'location' devem ser preenchidos corretamente."
  *       500:
- *         description: Erro ao criar evento
+ *         description: Erro interno ao criar evento
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Ocorreu um erro inesperado ao criar o evento. Por favor, tente novamente mais tarde."
  */
 router.post("/events", eventController.createEvent);
-
 
 /**
  * @swagger
@@ -201,22 +243,28 @@ router.post("/events", eventController.createEvent);
  *             schema:
  *               type: object
  *               properties:
- *                 id:
- *                   type: integer
- *                   example: 1
- *                 name:
+ *                 message:
  *                   type: string
- *                   example: "Tech Congress Updated"
- *                 description:
- *                   type: string
- *                   example: "Updated description."
- *                 date:
- *                   type: string
- *                   format: date
- *                   example: "2025-06-20"
- *                 location:
- *                   type: string
- *                   example: "Updated Location"
+ *                   example: "Evento atualizado com sucesso."
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       example: 1
+ *                     name:
+ *                       type: string
+ *                       example: "Tech Congress Updated"
+ *                     description:
+ *                       type: string
+ *                       example: "Updated description."
+ *                     date:
+ *                       type: string
+ *                       format: date
+ *                       example: "2025-06-20"
+ *                     location:
+ *                       type: string
+ *                       example: "Updated Location"
  *       404:
  *         description: Evento não encontrado para atualização
  *         content:
@@ -226,9 +274,9 @@ router.post("/events", eventController.createEvent);
  *               properties:
  *                 message:
  *                   type: string
- *                   example: "Evento não encontrado para atualização."
+ *                   example: "Nenhum evento foi encontrado com o ID fornecido para atualização."
  *       500:
- *         description: Erro ao atualizar evento
+ *         description: Erro interno ao atualizar evento
  *         content:
  *           application/json:
  *             schema:
@@ -236,7 +284,7 @@ router.post("/events", eventController.createEvent);
  *               properties:
  *                 message:
  *                   type: string
- *                   example: "Erro ao atualizar evento."
+ *                   example: "Ocorreu um erro inesperado ao atualizar o evento. Por favor, tente novamente mais tarde."
  */
 router.put("/events/:id", eventController.updateEvent);
 
@@ -274,9 +322,9 @@ router.put("/events/:id", eventController.updateEvent);
  *               properties:
  *                 message:
  *                   type: string
- *                   example: "Evento não encontrado."
+ *                   example: "Nenhum evento foi encontrado com o ID fornecido."
  *       500:
- *         description: Erro ao deletar evento
+ *         description: Erro interno ao deletar evento
  *         content:
  *           application/json:
  *             schema:
@@ -284,7 +332,7 @@ router.put("/events/:id", eventController.updateEvent);
  *               properties:
  *                 message:
  *                   type: string
- *                   example: "Erro ao deletar evento."
+ *                   example: "Ocorreu um erro inesperado ao deletar o evento. Por favor, tente novamente mais tarde."
  */
 router.delete("/events/:id", eventController.deleteEvent);
 

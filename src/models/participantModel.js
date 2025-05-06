@@ -14,7 +14,7 @@ const getAllParticipants = async (enterprise) => {
 };
 
 const getParticipantById = async (id) => {
-    console.log("ID recebido para busca:", id); // Log do ID recebido
+    console.log("ID recebido para busca:", id); 
 
     const query = `
         SELECT participants.*, events.name AS event_name 
@@ -24,7 +24,7 @@ const getParticipantById = async (id) => {
     `;
     const result = await pool.query(query, [id]);
 
-    console.log("Resultado da consulta:", result.rows); // Log do resultado da consulta
+    console.log("Resultado da consulta:", result.rows); 
 
     if (result.rowCount === 0) {
         throw new Error("Participante não encontrado.");
@@ -33,38 +33,33 @@ const getParticipantById = async (id) => {
     return result.rows[0];
 };
 
-const createParticipant = async ({ name, email, enterprise, event_id }) => {
+const createParticipant = async ({ name, email, enterprise, event_id, photo }) => {
     const query = `
-        INSERT INTO participants (name, email, enterprise, event_id)
-        VALUES ($1, $2, $3, $4)
+        INSERT INTO participants (name, email, enterprise, event_id, photo)
+        VALUES ($1, $2, $3, $4, $5)
         RETURNING *;
     `;
-    const values = [name, email, enterprise, event_id];
+    const values = [name, email, enterprise, event_id, photo];
     const result = await pool.query(query, values);
     return result.rows[0];
 };
 
-const updateParticipant = async (id, { name, email, enterprise, event_id }) => {
-    if (!name || !email || !enterprise || !event_id) {
-        throw new Error("Todos os campos são obrigatórios.");
-    }
-
+const updateParticipant = async (id, { name, email, enterprise, event_id, photo }) => {
     const query = `
         UPDATE participants
-        SET name = $1, email = $2, enterprise = $3, event_id = $4
-        WHERE id = $5
+        SET 
+            name = $1,
+            email = $2,
+            enterprise = $3,
+            event_id = $4,
+            photo = $5
+        WHERE id = $6
         RETURNING *;
     `;
-    const values = [name, email, enterprise, event_id, id];
-    const result = await pool.query(query, values);
-
-    if (result.rowCount === 0) {
-        throw new Error("Participante não encontrado para atualização.");
-    }
-
+    const values = [name, email, enterprise, event_id, photo, id];
+    const result = await pool.query(query, values); 
     return result.rows[0];
 };
-
 const deleteParticipant = async (id) => {
     const result = await pool.query(
         "DELETE FROM participants WHERE id = $1 RETURNING *",

@@ -39,7 +39,6 @@ const createEvent = async (req, res) => {
     try {
         const { name, description, date, location } = req.body;
 
-        // Validações
         if (!name || !date || !location) {
             return res.status(400).json({ message: "Os campos 'name', 'date' e 'location' são obrigatórios." });
         }
