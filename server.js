@@ -10,7 +10,6 @@ const reportRoutes = require("./src/routes/reportRoutes");
 const setupSwagger = require("./src/config/swagger");
 
 const app = express();
-
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use(cors());
@@ -29,5 +28,3 @@ app.listen(PORT, () => {
     console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
 });
 
-app.use(express.json()); // Middleware para processar JSON
-app.use(express.urlencoded({ extended: true })); // Middleware para processar URL-encoded
